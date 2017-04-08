@@ -4,6 +4,7 @@
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="https://apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css">
+<script src="https://apps.bdimg.com/libs/angular.js/1.5.0-beta.0/angular.min.js"></script>
 <style type="text/css">
 	body {font-family:'微软雅黑'; min-width:980px;width:980px;margin:0 auto;}
 	span {font-size:12px; }
@@ -13,10 +14,10 @@
 	.book_name {margin-top:0}
 	.book_summary {clear:both;line-height:2;}
 </style>
-<body ng-app="searchApp" ng-controller="searchCtrl" ng-cloak>
+<body ng-app="searchApp" ng-controller="searchCtrl">
 	<input class="form-control" ng-model="keyword" placeholder="请执行搜索" ng-keyup="keyupSearch($event)"/><button class="btn btn-raised btn-primary btn-sm" ng-click='query(keyword)'>搜索</button>
 	<br />
-	<div ng-show="image_url" class="jumbotron">
+	<div ng-show="image_url" class="jumbotron" ng-cloak>
 		<p ng-show="error_msg">{{error_msg}}</p>
 		<img ng-show="image_url" src="{{image_url}}">
 		<div class="wrapper">
@@ -29,7 +30,6 @@
 	</div>
 	<span>(数据来自豆瓣)</span>
 </body>
-<script src="https://apps.bdimg.com/libs/angular.js/1.5.0-beta.0/angular.min.js"></script>
 <script>
 	let app = angular.module("searchApp", []);
 	app.controller("searchCtrl", ["$scope","$http",function($scope,$http) {
