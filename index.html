@@ -1,0 +1,79 @@
+<html>
+<head>
+	<title>图书评价搜索器</title>
+</head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="https://apps.bdimg.com/libs/bootstrap-material/0.3.0/css/material.min.css">
+<style type="text/css">
+	body {font-family:'微软雅黑'; min-width:980px;width:980px;margin:0 auto;}
+	span {font-size:12px; }
+	input { padding-left:5px; margin-bottom:5px;}
+	img {float:left;}
+	.wrapper {float:left;margin-left:20px}
+	.book_name {margin-top:0}
+	.book_summary {clear:both;line-height:2;}
+</style>
+<body ng-app="searchApp" ng-controller="searchCtrl" ng-cloak>
+	<input class="form-control" ng-model="keyword" placeholder="请执行搜索" ng-keyup="keyupSearch($event)"/><button class="btn btn-raised btn-primary btn-sm" ng-click='query(keyword)'>搜索</button>
+	<br />
+	<div ng-show="image_url" class="jumbotron">
+		<p ng-show="error_msg">{{error_msg}}</p>
+		<img ng-show="image_url" src="{{image_url}}">
+		<div class="wrapper">
+			<p class="book_name" ng-show="book_name">书名：{{book_name}}</p>
+			<p ng-show="avg_rating">平均得分：{{avg_rating}}</p>
+			<p ng-show="book_author">作者：{{book_author}}</p>
+			<p ng-show="price">售价：{{price}}</p>
+		</div>
+		<p class="book_summary" ng-show="book_summary">简介：{{book_summary}}</p>
+	</div>
+	<span>(数据来自豆瓣)</span>
+</body>
+<script src="https://apps.bdimg.com/libs/angular.js/1.5.0-beta.0/angular.min.js"></script>
+<script>
+	let app = angular.module("searchApp", []);
+	app.controller("searchCtrl", ["$scope","$http",function($scope,$http) {
+    	window.callback = function(data){
+    		if(data.count == 0) {
+				$scope.error_msg = "什么都没找到！";
+				$scope.book_name = "没有数据";
+				$scope.avg_rating = "0";
+				$scope.book_author = "没有数据";
+				$scope.price = "0";
+				$scope.image_url = "";
+				$scope.book_summary = "没有数据";
+    		}
+    		$scope.book_name = data.books[0].title;
+    		$scope.avg_rating = data.books[0].rating.average;
+			$scope.book_author = data.books[0].author[0];
+			$scope.price = data.books[0].price;
+    		$scope.image_url = data.books[0].image;
+    		$scope.book_summary = data.books[0].summary;
+    	}
+    	$scope.query = function(keyword){
+    		$scope.error_msg = "";
+    		$scope.book_name = "";
+    		$scope.avg_rating = "";
+    		$scope.book_author = "";
+			$scope.price = "";
+    		$scope.image_url = "";
+    		$scope.book_summary = "";
+    		let url = "https://api.douban.com/v2/book/search?q="+keyword+"&callback=callback";
+    		$http.jsonp(url,{jsonpCallbackParam: "callback"})
+    			.success(function(data){
+    			console.log("200")
+    			})
+    			.error(function(error){
+    				console.log(error)
+    			})
+    	}
+		//支持按回车执行搜索
+		$scope.keyupSearch = function(e){
+			let keycode = window.event?e.keyCode:e.which; 
+        	if(keycode==13){//13 == 回车键
+        		$scope.query($scope.keyword);
+        	}
+		};
+	}]);
+</script>
+</html>
